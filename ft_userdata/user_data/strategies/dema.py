@@ -28,18 +28,18 @@ class dema(IStrategy):
 
     # Can this strategy go short?
     can_short: True
-    minimal_roi = {"0": 0.35}
-    stoploss = -0.15
+    minimal_roi = {"0": 0.47}
+    stoploss = -0.25
 
     def leverage(self, pair: str, current_time: datetime, current_rate: float,
                  proposed_leverage: float, max_leverage: float, entry_tag: Optional[str], side: str,
                  **kwargs) -> float:
 
-        return 40
+        return 10
 
     # Trailing stoploss
     trailing_stop = False
-    timeframe = '5m'
+    timeframe = '15m'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -48,7 +48,7 @@ class dema(IStrategy):
     ignore_roi_if_entry_signal = False
 
 
-    startup_candle_count: int = 10
+    startup_candle_count: int = 110
 
     # Optional order type mapping.
 
@@ -63,7 +63,8 @@ class dema(IStrategy):
         return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe['dema'] = ta.DEMA(dataframe, timeperiod=9)
+        dataframe['dema20'] = ta.DEMA(dataframe, timeperiod=20)
+        dataframe['dema100'] = ta.DEMA(dataframe, timeperiod=100)
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -73,20 +74,14 @@ class dema(IStrategy):
         :param metadata: Additional information, like the currently traded pair
         :return: DataFrame with entry columns populated
         """
+        
         dataframe.loc[
             (
-                (dataframe['close'] <= dataframe['dema']) &  
+                (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_long'] = 1
 
-        dataframe.loc[
-            (
-
-                (dataframe['close'] > dataframe['dema']) & 
-                (dataframe['volume'] > 0)  # Make sure Volume is not 0
-            ),
-            'enter_short'] = 1
         return dataframe
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         return dataframe
