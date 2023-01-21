@@ -1,0 +1,94 @@
+{
+
+    "max_open_trades": 3,
+    "stake_currency": "USDT",
+    "stake_amount": 10,
+    "tradable_balance_ratio": 0.99 ,
+    "fiat_display_currency": "USD",
+    "dry_run": true,
+    "cancel_open_orders_on_exit": false,
+    "trading_mode": "futures",
+    "margin_mode": "isolated",
+    "unfilledtimeout": {
+      "entry": 15,
+      "exit": 15,
+      "exit_timeout_count": 0,
+      "unit": "minutes"
+    },
+    "order_types": {
+      "entry": "market",
+      "exit": "market",
+      "emergency_exit": "market",
+      "force_entry": "market",
+      "force_exit": "market",
+      "stoploss": "market",
+      "stoploss_on_exchange": false,
+      "stoploss_on_exchange_interval": 60
+  },
+    "entry_pricing": {
+      "price_side": "other",
+      "use_order_book": true,
+      "order_book_top": 1,
+      "price_last_balance": 0.0,
+      "check_depth_of_market": {
+        "enabled": false,
+        "bids_to_ask_delta": 1
+      }
+    },
+    "exit_pricing": {
+      "price_side": "other",
+      "use_order_book": true,
+      "order_book_top": 1
+    },
+    "exchange": {
+      "name": "binance",
+      "key": "3UZyeUOKcVnKrr9qcRw5HSRLsoTpm5QP5NIeSZQCUyGU2nWmfi9O9w6C8ut11cZe",
+      "secret": "JMN3ljF77tNhWqS2dfiIsAn9UDBrCA5oa9D5HPyFM3LQgu33taWWUL1wHKQpVTnf",
+      "ccxt_config": {},
+      "ccxt_async_config": {},
+      "pair_whitelist": [
+        "XRP/USDT",
+        "BTC/USDT",
+        "ETH/USDT"
+      ],
+      "pair_blacklist": ["BNB/.*"]
+    },
+    "pairlists": [{ "method": "StaticPairList" }],
+    "edge": {
+      "enabled": false,
+      "process_throttle_secs": 3600,
+      "calculate_since_number_of_days": 7,
+      "allowed_risk": 0.01,
+      "stoploss_range_min": -0.01,
+      "stoploss_range_max": -0.1,
+      "stoploss_range_step": -0.01,
+      "minimum_winrate": 0.6,
+      "minimum_expectancy": 0.2,
+      "min_trade_number": 10,
+      "max_trade_duration_minute": 1440,
+      "remove_pumps": false
+    },
+    "telegram": {
+        "enabled": true,
+        "token": "5680488575:AAHHX0NiUUNdgZdAXDO0bhmaSy9kPwh-3SA",
+        "chat_id": "5119705839"
+    },
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "verbosity": "error",
+        "enable_openapi": false,
+        "jwt_secret_key": "3UZyeUOKcVnKrr9qcRw5HSRLsoTpm5QP5NIeSZQCUyGU2nWmfi9O9w6C8ut11cZe",
+        "ws_token": "JMN3ljF77tNhWqS2dfiIsAn9UDBrCA5oa9D5HPyFM3LQgu33taWWUL1wHKQpVTnf",
+        "CORS_origins": [],
+        "username": "dema_bot",
+        "password": "dema_bot2023"
+    },
+    "bot_name": "freqtrade",
+    "initial_state": "running",
+    "force_entry_enable": false,
+    "internals": {
+        "process_throttle_secs": 10
+    }
+}
