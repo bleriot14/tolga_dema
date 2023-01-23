@@ -23,6 +23,7 @@ import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 # This class is a sample. Feel free to customize it.
 class dema(IStrategy):
+    
 
     INTERFACE_VERSION = 3
 
@@ -30,7 +31,12 @@ class dema(IStrategy):
     can_short: True
     minimal_roi = {"0": 0.47}
     stoploss = -0.25
-
+    def heikin_ashi(self, df: DataFrame) -> None:
+        df_shifted = df.shift()
+        df['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
+        df['ha_close'] = (df['open'] + df['high'] + df['low'] + df['close']) / 4
+        df['ha_high'] = df[['high', 'open', 'close']].max(axis=1)
+        df['ha_low'] = df[['low', 'open', 'close']].min(axis=1)
     def leverage(self, pair: str, current_time: datetime, current_rate: float,
                  proposed_leverage: float, max_leverage: float, entry_tag: Optional[str], side: str,
                  **kwargs) -> float:
@@ -63,8 +69,9 @@ class dema(IStrategy):
         return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe['dema20'] = ta.DEMA(dataframe, timeperiod=20)
-        dataframe['dema100'] = ta.DEMA(dataframe, timeperiod=100)
+        heikin_ashi(dataframe)
+        dataframe['dema20'] = ta.DEMA(dataframe['ha_close'], timeperiod=20)
+        dataframe['dema100'] = ta.DEMA(dataframe['ha_close'], timeperiod=100)
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
