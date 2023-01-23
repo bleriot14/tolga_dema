@@ -22,6 +22,12 @@ import talib.abstract as ta
 import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 # This class is a sample. Feel free to customize it.
+def heikin_ashi(self, df: DataFrame) -> None:
+    df_shifted = df.shift()
+    df['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
+    df['ha_close'] = (df['open'] + df['high'] + df['low'] + df['close']) / 4
+    df['ha_high'] = df[['high', 'open', 'close']].max(axis=1)
+    df['ha_low'] = df[['low', 'open', 'close']].min(axis=1)
 class dema(IStrategy):
     
 
@@ -31,12 +37,7 @@ class dema(IStrategy):
     can_short: True
     minimal_roi = {"0": 0.47}
     stoploss = -0.25
-    def heikin_ashi(self, df: DataFrame) -> None:
-        df_shifted = df.shift()
-        df['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
-        df['ha_close'] = (df['open'] + df['high'] + df['low'] + df['close']) / 4
-        df['ha_high'] = df[['high', 'open', 'close']].max(axis=1)
-        df['ha_low'] = df[['low', 'open', 'close']].min(axis=1)
+
     def leverage(self, pair: str, current_time: datetime, current_rate: float,
                  proposed_leverage: float, max_leverage: float, entry_tag: Optional[str], side: str,
                  **kwargs) -> float:
