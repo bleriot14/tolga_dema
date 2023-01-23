@@ -104,8 +104,8 @@
         "jwt_secret_key": "3UZyeUOKcVnKrr9qcRw5HSRLsoTpm5QP5NIeSZQCUyGU2nWmfi9O9w6C8ut11cZe",
         "ws_token": "JMN3ljF77tNhWqS2dfiIsAn9UDBrCA5oa9D5HPyFM3LQgu33taWWUL1wHKQpVTnf",
         "CORS_origins": [],
-        "username": "dema_bot",
-        "password": "dema_bot2023"
+        "username": "demabot",
+        "password": "f13f3d44"
     },
     "bot_name": "freqtrade",
     "initial_state": "running",
