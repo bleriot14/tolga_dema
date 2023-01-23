@@ -42,8 +42,8 @@
     },
     "exchange": {
       "name": "binance",
-      "key": "3UZyeUOKcVnKrr9qcRw5HSRLsoTpm5QP5NIeSZQCUyGU2nWmfi9O9w6dsadas",
-      "secret": "JMN3ljF77tNhWqS2dfiIsAn9UDBrCA5oa9D5HPyFM3LQgu33taWWUL1adasdanf",
+      "key": "kkx9qmzbC3w0pwjUqhyyWwzLK5M1TbEE8uFwnioXVFq3jfc0ax1s3zdANeOmN7J1",
+      "secret": "uq8GFT5tnHmRpp8BkS5Dif0Ow8X9Jd4LAKrCqmiKv3pi7jQueWJOSq4g5mNlSznT",
       "ccxt_config": {},
       "ccxt_async_config": {},
       "pair_whitelist": [
