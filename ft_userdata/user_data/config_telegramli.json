@@ -2,7 +2,7 @@
 
     "max_open_trades": 25,
     "stake_currency": "USDT",
-    "stake_amount": 12,5,
+    "stake_amount": 12.5,
     "tradable_balance_ratio": 0.99 ,
     "fiat_display_currency": "USD",
     "dry_run": true,
@@ -93,7 +93,7 @@
     "telegram": {
         "enabled": true,
         "token": "5680488575:AAHHX0NiUUNdgZdAXDO0bhmaSy9kPwh-3SA",
-        "chat_id": "1108151690"
+        "chat_id": "5119705839"
     },
     "api_server": {
         "enabled": true,
