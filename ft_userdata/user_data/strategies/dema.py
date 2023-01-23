@@ -70,7 +70,11 @@ class dema(IStrategy):
         return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        heikin_ashi(dataframe)
+        df_shifted = dataframe.shift()
+        dataframe['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
+        dataframe['ha_close'] = (dataframe['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
+        dataframe['ha_high'] = dataframe[['high', 'open', 'close']].max(axis=1)
+        dataframe['ha_low'] = dataframe[['low', 'open', 'close']].min(axis=1)
         dataframe['dema20'] = ta.DEMA(dataframe['ha_close'], timeperiod=20)
         dataframe['dema100'] = ta.DEMA(dataframe['ha_close'], timeperiod=100)
         return dataframe
