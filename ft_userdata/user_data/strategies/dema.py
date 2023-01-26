@@ -22,15 +22,9 @@ import talib.abstract as ta
 import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 # This class is a sample. Feel free to customize it.
-def heikin_ashi(self, df: DataFrame) -> None:
-    df_shifted = df.shift()
-    df['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
-    df['ha_close'] = (df['open'] + df['high'] + df['low'] + df['close']) / 4
-    df['ha_high'] = df[['high', 'open', 'close']].max(axis=1)
-    df['ha_low'] = df[['low', 'open', 'close']].min(axis=1)
+
 class dema(IStrategy):
     
-
     INTERFACE_VERSION = 3
 
     # Can this strategy go short?
@@ -110,7 +104,7 @@ class dema(IStrategy):
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
         'exit_long'] = 1
-         dataframe.loc[
+        dataframe.loc[
             (
                 (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
                 (dataframe['dema20'] >= dataframe['dema100']) &
