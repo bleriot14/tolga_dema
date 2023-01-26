@@ -1,4 +1,5 @@
-{
+{   
+    "trailing_only_offset_is_reached": true,
     "stoploss": -0.25,
     "trailing_stop": true,
     "trailing_stop_positive": 0.05,
