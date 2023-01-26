@@ -66,7 +66,7 @@ class dema(IStrategy):
         dataframe_long = resample_to_interval(dataframe, 15)  # 240 = 4 * 60 = 4h
         df_shifted =  dataframe_long.shift()
         dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
-        dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
+        dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe_long['high'] + dataframe_long['low'] + dataframe_long['close']) / 4
         dataframe_long['ha_high'] = dataframe_long[['high', 'open', 'close']].max(axis=1)
         dataframe_long['ha_low'] = dataframe_long[['low', 'open', 'close']].min(axis=1)
         dataframe_long['dema20'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=20)
