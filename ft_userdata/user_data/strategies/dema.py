@@ -103,7 +103,7 @@ class dema(IStrategy):
                 (dataframe['dema20'] <= dataframe['dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
-        'exit_long'] = 1
+            'exit_long'] = 1
         dataframe.loc[
             (
                 (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
