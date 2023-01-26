@@ -20,6 +20,7 @@ from freqtrade.strategy import (
 # Add your lib to import here
 import talib.abstract as ta 
 import freqtrade.vendor.qtpylib.indicators as qtpylib
+from technical.util import resample_to_interval, resampled_merge
 
 # This class is a sample. Feel free to customize it.
 
