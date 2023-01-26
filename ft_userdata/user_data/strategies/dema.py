@@ -87,14 +87,14 @@ class dema(IStrategy):
         """
         dataframe.loc[
             (   
-                (dataframe['shifted_ema20'] >= dataframe['resample_15_dema100']) &  
+                (dataframe['fake_dema20'] >= dataframe['resample_15_dema100']) &  
                 (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_long'] = 1
         dataframe.loc[
             (
-                (dataframe['shifted_ema20'] <= dataframe['resample_15_dema100']) &  
+                (dataframe['fake_dema20'] <= dataframe['resample_15_dema100']) &  
                 (dataframe['shifted_ema20']> dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
