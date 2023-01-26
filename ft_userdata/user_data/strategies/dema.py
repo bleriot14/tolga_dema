@@ -38,7 +38,7 @@ class dema(IStrategy):
 
     # Trailing stoploss
 
-    timeframe = '15m'
+    timeframe = '1m'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -62,13 +62,17 @@ class dema(IStrategy):
         return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        df_shifted = dataframe.shift()
-        dataframe['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
-        dataframe['ha_close'] = (dataframe['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
-        dataframe['ha_high'] = dataframe[['high', 'open', 'close']].max(axis=1)
-        dataframe['ha_low'] = dataframe[['low', 'open', 'close']].min(axis=1)
-        dataframe['dema20'] = ta.DEMA(dataframe['ha_close'], timeperiod=20)
-        dataframe['dema100'] = ta.DEMA(dataframe['ha_close'], timeperiod=100)
+        dataframe_long = resample_to_interval(dataframe, 15)  # 240 = 4 * 60 = 4h
+        df_shifted =  dataframe_long.shift()
+        dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
+        dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
+        dataframe_long['ha_high'] = dataframe_long[['high', 'open', 'close']].max(axis=1)
+        dataframe_long['ha_low'] = dataframe_long[['low', 'open', 'close']].min(axis=1)
+        dataframe_long['dema20'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=20)
+        dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
+        dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
+        dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
+
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -78,18 +82,19 @@ class dema(IStrategy):
         :param metadata: Additional information, like the currently traded pair
         :return: DataFrame with entry columns populated
         """
-        
+        df_shifted = dataframe.shift()
+        df_fake['fake_dema20'] = (dataframe['closed'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8)))
         dataframe.loc[
-            (
-                (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
-                (dataframe['dema20'] >= dataframe['dema100']) &
+            (   
+                (df_fake['fake_dema20'] >= dataframe['resample_15_dema100']) &  
+                (df_shifted['resample_15_dema20'] < dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_long'] = 1
         dataframe.loc[
             (
-                (qtpylib.crossed_below(dataframe['dema20'], dataframe['dema100'])) &  
-                (dataframe['dema20'] <= dataframe['dema100']) &
+                (df_fake['fake_dema20'] <= dataframe['resample_15_dema100']) &  
+                (df_shifted['resample_15_dema20'] > dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_short'] = 1
@@ -97,17 +102,20 @@ class dema(IStrategy):
 
         return dataframe
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        df_shifted = dataframe.shift()
         dataframe.loc[
             (
-                (qtpylib.crossed_below(dataframe['dema20'], dataframe['dema100'])) &  
-                (dataframe['dema20'] <= dataframe['dema100']) &
+                (dataframe['resample_15_dema20'] <= dataframe['resample_15_dema100']) &  
+                (df_shifted['resample_15_dema20'] > dataframe['resample_15_dema100']) &
+                (dataframe['resample_15_dema30'] <= dataframe['resample_15_dema100']) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'exit_long'] = 1
         dataframe.loc[
             (
-                (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
-                (dataframe['dema20'] >= dataframe['dema100']) &
+                (dataframe['resample_15_dema20'] >= dataframe['resample_15_dema100']) &  
+                (df_shifted['resample_15_dema20'] < dataframe['resample_15_dema100']) &
+                (dataframe['resample_15_dema30'] >= dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'exit_short'] = 1
