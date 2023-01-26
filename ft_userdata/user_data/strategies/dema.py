@@ -39,7 +39,7 @@ class dema(IStrategy):
 
     # Trailing stoploss
 
-    timeframe = '1m'
+    timeframe = '5m'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -48,7 +48,7 @@ class dema(IStrategy):
     ignore_roi_if_entry_signal = False
 
 
-    startup_candle_count: int = 2000
+    startup_candle_count: int = 350
 
     # Optional order type mapping.
 
@@ -63,7 +63,7 @@ class dema(IStrategy):
         return []
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe_long = resample_to_interval(dataframe, 15)  # 240 = 4 * 60 = 4h
+        dataframe_long = resample_to_interval(dataframe, 3)  # 240 = 4 * 60 = 4h
         df_shifted =  dataframe_long.shift()
         dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
         dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe_long['high'] + dataframe_long['low'] + dataframe_long['close']) / 4
@@ -73,8 +73,8 @@ class dema(IStrategy):
         dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
-        dataframe['shifted_ema20'] = dataframe['resample_15_dema20'].shift()
-        dataframe['fake_dema20'] = (dataframe['close'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8)))
+        dataframe['shifted_ema20'] = dataframe['resample_3_dema20'].shift()
+        dataframe['fake_dema20'] = (dataframe['close'] * 1/8 ) + (dataframe['resample_3_dema20'] * (1 - (1/8)))
 
         return dataframe
 
@@ -87,15 +87,15 @@ class dema(IStrategy):
         """
         dataframe.loc[
             (   
-                (dataframe['fake_dema20'] >= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
+                (dataframe['fake_dema20'] >= dataframe['resample_3_dema100']) &  
+                (dataframe['shifted_ema20'] < dataframe['resample_3_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_long'] = 1
         dataframe.loc[
             (
-                (dataframe['fake_dema20'] <= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20']> dataframe['resample_15_dema100']) &
+                (dataframe['fake_dema20'] <= dataframe['resample_3_dema100']) &  
+                (dataframe['shifted_ema20']> dataframe['resample_3_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_short'] = 1
@@ -106,17 +106,17 @@ class dema(IStrategy):
         df_shifted = dataframe.shift()
         dataframe.loc[
             (
-                (dataframe['resample_15_dema20'] <= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
-                (dataframe['resample_15_dema30'] <= dataframe['resample_15_dema100']) & 
+                (dataframe['resample_3_dema20'] <= dataframe['resample_3_dema100']) &  
+                (dataframe['shifted_ema20'] > dataframe['resample_3_dema100']) &
+                (dataframe['resample_3_dema30'] <= dataframe['resample_3_dema100']) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'exit_long'] = 1
         dataframe.loc[
             (
-                (dataframe['resample_15_dema20'] >= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
-                (dataframe['resample_15_dema30'] >= dataframe['resample_15_dema100']) &
+                (dataframe['resample_3_dema20'] >= dataframe['resample_3_dema100']) &  
+                (dataframe['shifted_ema20'] < dataframe['resample_3_dema100']) &
+                (dataframe['resample_3_dema30'] >= dataframe['resample_3_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'exit_short'] = 1
