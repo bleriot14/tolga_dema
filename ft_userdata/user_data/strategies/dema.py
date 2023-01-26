@@ -35,8 +35,6 @@ class dema(IStrategy):
 
     # Can this strategy go short?
     can_short: True
-    minimal_roi = {"0": 0.47}
-    stoploss = -0.25
 
     def leverage(self, pair: str, current_time: datetime, current_rate: float,
                  proposed_leverage: float, max_leverage: float, entry_tag: Optional[str], side: str,
@@ -45,7 +43,7 @@ class dema(IStrategy):
         return 10
 
     # Trailing stoploss
-    trailing_stop = False
+
     timeframe = '15m'
 
     # Run "populate_indicators()" only for new candle.
@@ -90,10 +88,33 @@ class dema(IStrategy):
         dataframe.loc[
             (
                 (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
+                (dataframe['dema20'] >= dataframe['dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             'enter_long'] = 1
+        dataframe.loc[
+            (
+                (qtpylib.crossed_below(dataframe['dema20'], dataframe['dema100'])) &  
+                (dataframe['dema20'] <= dataframe['dema100']) &
+                (dataframe['volume'] > 0)  # Make sure Volume is not 0
+            ),
+            'enter_short'] = 1
+        
 
         return dataframe
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe.loc[
+            (
+                (qtpylib.crossed_below(dataframe['dema20'], dataframe['dema100'])) &  
+                (dataframe['dema20'] <= dataframe['dema100']) &
+                (dataframe['volume'] > 0)  # Make sure Volume is not 0
+            ),
+        'exit_long'] = 1
+         dataframe.loc[
+            (
+                (qtpylib.crossed_above(dataframe['dema20'], dataframe['dema100'])) &  
+                (dataframe['dema20'] >= dataframe['dema100']) &
+                (dataframe['volume'] > 0)  # Make sure Volume is not 0
+            ),
+            'exit_short'] = 1
         return dataframe
