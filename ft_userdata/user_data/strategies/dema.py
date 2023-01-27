@@ -71,10 +71,10 @@ class dema(IStrategy):
         dataframe_long['dema20'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=20)
         dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
-        dataframe_long['shifted_ema20'] = dataframe_long['dema20'].shift()
+        
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
         dataframe_long.drop(columns=['resample_15_high', 'resample_15_low', 'resample_15_close', 'resample_15_open', 'resample_15_volume', 'resample_15_date'])
-        dataframe.rename(columns={"resample_15_shifted_ema20" : "shifted_ema20"})
+        dataframe['shifted_ema20'] = dataframe['resample_15_dema20'].shift(3)
         
         dataframe['ha_close_5m'] = (dataframe['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
         dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) - ((dataframe['ha_close_5m'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
