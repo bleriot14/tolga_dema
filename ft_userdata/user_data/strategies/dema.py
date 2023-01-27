@@ -60,7 +60,7 @@ class dema(IStrategy):
         """
         """
         return []
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         
         dataframe_long = resample_to_interval(dataframe[['open','close','high','low']], 15)  # 240 = 4 * 60 = 4h
         df_shifted =  dataframe_long[['open','close']].shift()
