@@ -47,7 +47,7 @@ class dema(IStrategy):
     exit_profit_only = False
     ignore_roi_if_entry_signal = False
 
-    startup_candle_count: int = 350
+    startup_candle_count: int = 500
 
     # Optional order type mapping.
 
@@ -61,9 +61,10 @@ class dema(IStrategy):
         """
         return []
 
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe_long = resample_to_interval(dataframe, 15)  # 240 = 4 * 60 = 4h
-        df_shifted =  dataframe_long.shift()
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame
+        
+        dataframe_long = resample_to_interval(dataframe[['open','close','high','low']], 15)  # 240 = 4 * 60 = 4h
+        df_shifted =  dataframe_long[['open','close']].shift()
         dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
         dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe_long['high'] + dataframe_long['low'] + dataframe_long['close']) / 4
         dataframe_long['ha_high'] = dataframe_long[['high', 'open', 'close']].max(axis=1)
@@ -75,8 +76,10 @@ class dema(IStrategy):
         dataframe_long.drop(columns=['high', 'low', 'close','open','volume'])
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
         dataframe.rename(columns={"resample_15_shifted_ema20": "shifted_ema20"})
-        dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) -  ((dataframe['close'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
-
+        
+        dataframe['ha_close_5m'] = (dataframe['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
+        dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) - ((dataframe['ha_close_5m'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
+        
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
