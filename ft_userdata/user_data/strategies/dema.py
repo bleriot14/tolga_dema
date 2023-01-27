@@ -69,7 +69,6 @@ class dema(IStrategy):
         dataframe_long['ha_high'] = dataframe_long[['high', 'open', 'close']].max(axis=1)
         dataframe_long['ha_low'] = dataframe_long[['low', 'open', 'close']].min(axis=1) 
         dataframe_long['dema20'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=20)
-        dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
         
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
@@ -110,7 +109,6 @@ class dema(IStrategy):
             (
                 (dataframe['resample_15_dema20'] <= dataframe['resample_15_dema100']) &  
                 (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
-                (dataframe['resample_15_dema30'] <= dataframe['resample_15_dema100']) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['exit_long', 'exit_tag']] = (1, 'Dususe_gecti')
@@ -118,7 +116,6 @@ class dema(IStrategy):
             (
                 (dataframe['resample_15_dema20'] >= dataframe['resample_15_dema100']) &  
                 (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
-                (dataframe['resample_15_dema30'] >= dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['exit_short', 'exit_tag']] = (1, 'yukselise_gecti')
