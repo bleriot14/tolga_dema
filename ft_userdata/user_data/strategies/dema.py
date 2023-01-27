@@ -62,7 +62,7 @@ class dema(IStrategy):
         return []
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         
-        dataframe_long = resample_to_interval(dataframe[['open', 'close', 'high', 'low', 'date']], 15)  # 240 = 4 * 60 = 4h
+        dataframe_long = resample_to_interval(dataframe, 15)  # 240 = 4 * 60 = 4h
         df_shifted =  dataframe_long[['open','close']].shift()
         dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
         dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe_long['high'] + dataframe_long['low'] + dataframe_long['close']) / 4
@@ -72,7 +72,7 @@ class dema(IStrategy):
         dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
         dataframe_long['shifted_ema20'] = dataframe_long['dema20'].shift()
-        dataframe_long.drop(columns=['high', 'low', 'close', 'open', 'volume'])
+        dataframe_long.drop(columns=['high', 'low', 'close', 'open', 'volume', 'date'])
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
         dataframe.rename(columns={"resample_15_shifted_ema20" : "shifted_ema20"})
         
