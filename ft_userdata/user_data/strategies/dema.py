@@ -74,7 +74,7 @@ class dema(IStrategy):
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
         dataframe['shifted_ema20'] = dataframe['resample_15_dema20'].shift()
-        dataframe['fake_dema20'] = dataframe['resample_15_dema20'] - (2 * ((dataframe['close'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8)))))
+        dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) -  ((dataframe['close'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
 
         return dataframe
 
