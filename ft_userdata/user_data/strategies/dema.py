@@ -95,7 +95,7 @@ class dema(IStrategy):
         dataframe.loc[
             (
                 (dataframe['fake_dema20'] <= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20']> dataframe['resample_15_dema100']) &
+                (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['enter_short', 'enter_tag']] = (1, 'Dusuyoooooor')
