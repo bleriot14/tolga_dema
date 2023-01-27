@@ -47,8 +47,7 @@ class dema(IStrategy):
     exit_profit_only = False
     ignore_roi_if_entry_signal = False
 
-
-    startup_candle_count: int = 315
+    startup_candle_count: int = 350
 
     # Optional order type mapping.
 
@@ -68,12 +67,14 @@ class dema(IStrategy):
         dataframe_long['ha_open'] = (df_shifted['open'] + df_shifted['close']) / 2
         dataframe_long['ha_close'] = (dataframe_long['open'] + dataframe_long['high'] + dataframe_long['low'] + dataframe_long['close']) / 4
         dataframe_long['ha_high'] = dataframe_long[['high', 'open', 'close']].max(axis=1)
-        dataframe_long['ha_low'] = dataframe_long[['low', 'open', 'close']].min(axis=1)
+        dataframe_long['ha_low'] = dataframe_long[['low', 'open', 'close']].min(axis=1) 
         dataframe_long['dema20'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=20)
         dataframe_long['dema30'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=30)
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
+        dataframe_long['shifted_ema20'] = dataframe_long['dema20'].shift()
+        dataframe_long.drop(columns=['high', 'low', 'close','open','volume'])
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
-        dataframe['shifted_ema20'] = dataframe['resample_15_dema20'].shift()
+        dataframe.rename(columns={"resample_15_shifted_ema20": "shifted_ema20"})
         dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) -  ((dataframe['close'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
 
         return dataframe
@@ -93,17 +94,17 @@ class dema(IStrategy):
             ),
             ['enter_long', 'enter_tag']] = (1, 'yukseliyooooor')
         dataframe.loc[
-            (
+            (   
                 (dataframe['fake_dema20'] <= dataframe['resample_15_dema100']) &  
                 (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
-            ['enter_short', 'enter_tag']] = (1, 'Dusuyoooooor')
+            ['enter_short', 'enter_tag']] = (1, 'yukseliyooooor') 
         
+
 
         return dataframe
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        df_shifted = dataframe.shift()
         dataframe.loc[
             (
                 (dataframe['resample_15_dema20'] <= dataframe['resample_15_dema100']) &  
