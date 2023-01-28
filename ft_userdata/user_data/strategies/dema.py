@@ -72,7 +72,6 @@ class dema(IStrategy):
         dataframe_long['dema100'] = ta.DEMA(dataframe_long['ha_close'], timeperiod=100)
         
         dataframe = resampled_merge(dataframe, dataframe_long, fill_na=True)
-        dataframe['shifted_ema20'] = dataframe['resample_15_dema20'].shift(3)
         dataframe.drop(columns=['resample_15_ha_close','resample_15_ha_open', 'resample_15_ha_low','resample_15_ha_high', 'resample_15_high', 'resample_15_low', 'resample_15_close', 'resample_15_open', 'resample_15_volume', 'resample_15_date'],axis = 1, inplace = True)
         dataframe['ha_close_5m'] = (dataframe['open'] + dataframe['high'] + dataframe['low'] + dataframe['close']) / 4
         dataframe['fake_dema20'] = ( 2 * dataframe['resample_15_dema20']) - ((dataframe['ha_close_5m'] * 1/8 ) + (dataframe['resample_15_dema20'] * (1 - (1/8))))
@@ -88,15 +87,13 @@ class dema(IStrategy):
         """
         dataframe.loc[
             (   
-                (dataframe['fake_dema20'] >= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
+                (qtpylib.crossed_above(dataframe['fake_dema20'], dataframe['resample_15_dema100'])) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['enter_long', 'enter_tag']] = (1, 'yukseliyooooor')
         dataframe.loc[
             (   
-                (dataframe['fake_dema20'] <= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
+                (qtpylib.crossed_below(dataframe['fake_dema20'], dataframe['resample_15_dema100'])) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['enter_short', 'enter_tag']] = (1, 'yukseliyooooor') 
@@ -106,16 +103,13 @@ class dema(IStrategy):
         return dataframe
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (
-                (dataframe['resample_15_dema20'] <= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] > dataframe['resample_15_dema100']) &
+            (   (qtpylib.crossed_below(dataframe['resample_15_dema20'], dataframe['resample_15_dema100'])) &  
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['exit_long', 'exit_tag']] = (1, 'Dususe_gecti')
         dataframe.loc[
             (
-                (dataframe['resample_15_dema20'] >= dataframe['resample_15_dema100']) &  
-                (dataframe['shifted_ema20'] < dataframe['resample_15_dema100']) &
+                (qtpylib.crossed_above(dataframe['resample_15_dema20'], dataframe['resample_15_dema100'])) & 
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['exit_short', 'exit_tag']] = (1, 'yukselise_gecti')
